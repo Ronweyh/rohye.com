@@ -1,15 +1,7 @@
 import React, { useEffect } from "react";
-import anime from "animejs";
 import "./App.scss";
-import { getTextAndGenerateHtml } from "./utils";
 
-let isInit = false;
-let isSwitch = false;
-let isAnimating = false;
-const duration = 1000;
-let animeCount = 0;
-let wrapper: HTMLElement;
-let top: number;
+// any 先解决一切
 
 const request =
   window.requestAnimationFrame || window.webkitRequestAnimationFrame;
@@ -31,150 +23,10 @@ let canvas: HTMLCanvasElement,
   colors: any[] = [],
   animateId = 0;
 
-// 主标题动画
-function titleAnimate() {
-  isAnimating = true;
-  anime.timeline().add({
-    targets: "#wrapper .main-title div",
-    duration: duration,
-    delay: function (el, index) {
-      return index * 70;
-    },
-    easing: "easeOutElastic",
-    opacity: 1,
-    translateY: function (_: any, index: number) {
-      return index % 2 === 0 ? ["-80%", "0%"] : ["80%", "0%"];
-    },
-    rotateZ: [90, 0],
-    complete() {
-      resetAnime();
-    },
-  });
-}
-
-function titleAnimateSwitch() {
-  let outTargets = "#wrapper .main-title div";
-  let inTargets = "#wrapper .main-title-switch div";
-  if (isSwitch) {
-    [outTargets, inTargets] = [inTargets, outTargets];
-  }
-  isAnimating = true;
-  animeCount++;
-  let animeObj = anime({
-    targets: outTargets,
-    duration: duration,
-    delay: function (el, index) {
-      return index * 70;
-    },
-    easing: "easeOutSine",
-    opacity: [1, 0],
-    translateY: function (_: any, index: number) {
-      return index % 2 === 0 ? ["0%", -top + "px"] : ["0%", top + "px"];
-    },
-    complete() {
-      resetAnime();
-    },
-  });
-  // 动画完成之后
-  animeObj.complete = () => {
-    anime.timeline().add({
-      targets: inTargets,
-      duration: duration,
-      delay: function (el, index) {
-        return index * 70;
-      },
-      easing: "easeOutElastic",
-      opacity: [0, 1],
-      scaleY: [8, 1],
-      scaleX: [0.5, 1],
-      complete() {
-        isAnimating = false;
-      },
-    });
-  };
-}
-
-// 签名动画
-function signatureAnimate() {
-  anime({
-    targets: "#wrapper .signature div",
-    scale: [4, 1],
-    opacity: [0, 1],
-    translateZ: 0,
-    easing: "easeOutExpo",
-    duration: duration,
-    delay: function (el, i) {
-      return 80 * i;
-    },
-    complete() {
-      resetAnime();
-    },
-  });
-}
-function signatureAnimateSwitch() {
-  let outTargets = "#wrapper .signature div";
-  let inTargets = "#wrapper .signature-switch div";
-  if (isSwitch) {
-    [outTargets, inTargets] = [inTargets, outTargets];
-  }
-  anime({
-    targets: outTargets,
-    duration: duration,
-    delay: function (el, index) {
-      return index * 20;
-    },
-    easing: "easeOutExpo",
-    opacity: [1, 0],
-    rotateY: [0, -90],
-    complete() {
-      resetAnime();
-    },
-  });
-  anime({
-    targets: inTargets,
-    duration: duration,
-    delay: function (el, index) {
-      return 200 + index * 20;
-    },
-    easing: "easeOutExpo",
-    opacity: [0, 1],
-    rotateY: [-90, 0],
-    complete() {
-      resetAnime();
-    },
-  });
-}
-
-// 重置动画状态
-function resetAnime() {
-  animeCount--;
-  if (!animeCount) {
-    isAnimating = false;
-  }
-}
-
-// 点击时切换
-function switchText() {
-  if (isAnimating) return;
-  // 隐藏主标题和签名，然后切换新的
-  if (isInit) {
-    animeCount = 4;
-    titleAnimateSwitch();
-    signatureAnimateSwitch();
-    isSwitch = !isSwitch; // false 为第一次点击
-  } else {
-    // 执行动画
-    animeCount = 2;
-    titleAnimate();
-    signatureAnimate();
-  }
-  isInit = true;
-}
-
 // 清空之前所有保存的点坐标和颜色,给一个初始坐标值开始画
 function init() {
   // 执行文字切换动画
-  switchText();
+  // switchText();
   cancel(animateId);
   allPoint = [];
   colors = [];
@@ -290,19 +142,10 @@ function loopDraw() {
 
 function App() {
   useEffect(() => {
-    // html生成
-    getTextAndGenerateHtml("main-title");
-    getTextAndGenerateHtml("main-title-switch");
-    getTextAndGenerateHtml("signature");
-    getTextAndGenerateHtml("signature-switch");
     mount();
   }, []);
 
   function mount() {
-    document.addEventListener("touchmove", function (e) {
-      e.preventDefault();
-    });
-
     canvas = document.getElementsByTagName("canvas")[0];
     context = canvas.getContext("2d") as CanvasRenderingContext2D;
 
@@ -311,13 +154,7 @@ function App() {
     context.scale(pr, pr);
     context.globalAlpha = 0.6;
 
-    wrapper = document.getElementById(
-      "wrapper"
-    ) as HTMLElement;
-    top = wrapper.offsetTop;
-
     document.onclick = init;
-    document.ontouchstart = init;
     init();
   }
 
@@ -325,14 +162,14 @@ function App() {
     <div className="App">
       <div id="wrapper">
         <div className="title-wrapper">
-          <h1 className="main-title">Rohye</h1>
-          <h1 className="main-title-switch switch">指尖上的艺术家</h1>
+          {/* <h1 className="main-title">Rohye</h1> */}
+          <h1 className="main-title">指尖上的艺术家</h1>
         </div>
         <div className="signature-wrapper">
           <h2 className="signature">若教眼前无离恨 不辞长作一码农</h2>
-          <h2 className="signature-switch switch">
+          {/* <h2 className="signature-switch switch">
             Talk is cheap , Show me your code
-          </h2>
+          </h2> */}
         </div>
         <p>
           <a href="https://github.com/rohye" rel="noreferrer" target="_blank">
