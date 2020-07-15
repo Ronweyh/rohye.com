@@ -177,7 +177,10 @@ function App() {
           </a>
         </p>
         <p>
-          <a href="blog.rohye.com">Blog</a>
+          <a href="https://blog.rohye.com">Blog</a>
+        </p>
+        <p>
+          <a href="https://docs.rohye.com">笔记</a>
         </p>
       </div>
       <canvas></canvas>
